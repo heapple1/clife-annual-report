@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C_Life 特色活动与难忘回忆</title>
+<style>
+  :root{
+    --bg:#fff7f2;
+    --bg2:#fff0e8;
+    --ink:#3d2b3d;
+    --muted:#9b7d9b;
+    --accent:#ff5c8d;
+    --accent2:#ffb627;
+    --accent3:#4dd0c0;
+    --rule:rgba(61,43,61,.10);
+    --grad-main:linear-gradient(135deg,#ff5c8d 0%,#ffb627 100%);
+    --grad-gold:linear-gradient(135deg,#ffd479 0%,#ffb627 100%);
+    --shadow:0 12px 34px rgba(255,92,141,.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  body{position:relative}
+
+  .stage::before,.stage::after{content:"";position:fixed;border-radius:50%;filter:blur(90px);z-index:0;pointer-events:none}
+  .stage::before{width:55vw;height:55vw;background:radial-gradient(circle,rgba(255,92,141,.22),transparent 60%);top:-12vw;right:-8vw}
+  .stage::after{width:50vw;height:50vw;background:radial-gradient(circle,rgba(255,182,39,.20),transparent 60%);bottom:-12vw;left:-8vw}
+
+  .confetti{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .cf{position:absolute;bottom:-10vh;font-size:1.1rem;opacity:0;animation:floatup linear infinite}
+  @keyframes floatup{0%{transform:translateY(0) rotate(0);opacity:0}8%{opacity:.9}90%{opacity:.7}100%{transform:translateY(-115vh) rotate(540deg);opacity:0}}
+
+  .stage{position:relative;width:100vw;height:100vh;overflow:hidden}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:4vh 6vw;opacity:0;visibility:hidden;transform:translateY(40px) scale(.96);
+    transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1),visibility 0s linear .7s;z-index:1}
+  .slide.active{opacity:1;visibility:visible;transform:none;transition-delay:0s,0s,0s;z-index:2}
+  .slide.prev{opacity:0;transform:translateY(-40px) scale(.96)}
+
+  .floats{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .fl{position:absolute;font-size:2rem;opacity:.5;animation:bob 4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-12px) rotate(6deg)}}
+  .fl.spin{animation:spin-slow 14s linear infinite}
+  @keyframes spin-slow{to{transform:rotate(360deg)}}
+  .fl.drift{animation:drift 6s ease-in-out infinite}
+  @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(14px,-10px)}}
+
+  .slide .r{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .slide.active .r{opacity:1;transform:none}
+  .d1{transition-delay:.12s}.d2{transition-delay:.28s}.d3{transition-delay:.44s}.d4{transition-delay:.6s}
+  .d5{transition-delay:.76s}.d6{transition-delay:.92s}.d7{transition-delay:1.08s}.d8{transition-delay:1.24s}
+
+  .slide .pop{opacity:0;transform:translateY(34px) scale(.6);transition:opacity .6s ease,transform .7s cubic-bezier(.34,1.56,.64,1)}
+  .slide.active .pop{opacity:1;transform:none}
+
+  .brand{font-size:1.05rem;letter-spacing:.42em;color:var(--accent);font-weight:700}
+  .cover-title{font-size:clamp(2.6rem,6vw,5.4rem);font-weight:800;letter-spacing:.04em;margin-top:1.4rem;
+    background:var(--grad-main);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .cover-sub{font-size:clamp(1.05rem,1.8vw,1.5rem);color:var(--muted);margin-top:1.6rem;letter-spacing:.18em}
+  .cover-year{font-size:clamp(1.3rem,2.2vw,1.9rem);color:var(--ink);margin-top:2.2rem;font-weight:300;letter-spacing:.3em}
+  .nine{position:absolute;font-size:46vh;line-height:1;font-weight:800;color:rgba(255,92,141,.06);z-index:0;user-select:none}
+
+  .eyebrow{font-size:.92rem;letter-spacing:.32em;color:var(--accent);font-weight:700;text-transform:uppercase}
+  .h-title{font-size:clamp(1.7rem,3vw,2.7rem);font-weight:700;margin-top:.9rem;letter-spacing:.02em}
+
+  .bg-emoji{position:absolute;font-size:38vh;line-height:1;opacity:.04;z-index:0;user-select:none;pointer-events:none}
+
+  /* scrapbook / polaroid */
+  .scrapbook{position:relative;width:92%;max-width:960px;height:62vh;margin-top:1.2rem}
+  .polaroid,.vid-frame,.vid-ph{
+    position:absolute;background:#fff;padding:10px;border-radius:4px;
+    box-shadow:0 8px 24px rgba(0,0,0,.14),0 2px 8px rgba(0,0,0,.08);
+    opacity:0;transform:translateY(40px) scale(.75) rotate(var(--rot,0deg));
+    transition:opacity .6s ease,transform .8s cubic-bezier(.34,1.56,.64,1)}
+  .slide.active .polaroid,
+  .slide.active .vid-frame,
+  .slide.active .vid-ph{opacity:1;transform:rotate(var(--rot,0deg))}
+  .slide.active .pd1{transition-delay:.3s}
+  .slide.active .pd2{transition-delay:.5s}
+  .slide.active .pd3{transition-delay:.7s}
+  .slide.active .pd4{transition-delay:.9s}
+  .polaroid{max-width:500px}
+  .polaroid img{display:block;width:100%;height:auto;border-radius:2px}
+  /* slide 3: constrain height so all photos fit */
+  section[data-slide="3"] .polaroid img{max-height:48vh}
+
+  /* video inside scrapbook */
+  .vid-frame video{display:block;border-radius:2px;width:100%;height:auto}
+  .unmute-btn{position:absolute;top:18px;right:18px;background:rgba(0,0,0,.45);color:#fff;border:none;
+    border-radius:999px;padding:4px 10px;font-size:.75rem;cursor:pointer;backdrop-filter:blur(4px);z-index:5}
+
+  /* video placeholder */
+  .vid-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;
+    background:rgba(255,255,255,.5);border:2px dashed rgba(255,92,141,.3)}
+  .vid-ph .icon{font-size:2.2rem}
+  .vid-ph .text{color:var(--muted);font-size:.82rem;letter-spacing:.1em}
+
+  /* centered video (video-only slides) */
+  .vid-center-wrap{position:relative;display:inline-block;background:#fff;padding:12px;border-radius:6px;
+    box-shadow:0 12px 34px rgba(255,92,141,.16),0 4px 12px rgba(0,0,0,.1)}
+  .vid-center-wrap video{display:block;border-radius:4px;max-width:420px;max-height:58vh;width:auto;height:auto}
+
+  /* centered placeholder box */
+  .center-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
+    border:2px dashed rgba(255,92,141,.3);border-radius:16px;padding:3rem 4rem;
+    background:rgba(255,255,255,.5);color:var(--muted)}
+  .center-box .icon{font-size:3rem}
+  .center-box .text{font-size:1rem;letter-spacing:.12em}
+
+  .close-title{font-size:clamp(2.6rem,6vw,5rem);font-weight:800;background:var(--grad-main);
+    -webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.04em}
+  .close-sub{color:var(--muted);margin-top:1.4rem;font-size:clamp(1rem,1.6vw,1.3rem);letter-spacing:.16em}
+  .close-mark{color:var(--accent);letter-spacing:.4em;margin-top:2rem;font-size:.9rem;font-weight:700}
+
+  .controls{position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%);display:flex;gap:.7rem;align-items:center;z-index:50;
+    background:rgba(255,255,255,.7);border:1px solid var(--rule);padding:.45rem .8rem;border-radius:999px;backdrop-filter:blur(8px);box-shadow:var(--shadow)}
+  .ctrl-btn{background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:.15rem .3rem;line-height:1}
+  .ctrl-btn:hover{color:var(--accent)}
+  .dots{display:flex;gap:.4rem;align-items:center}
+  .dot{width:7px;height:7px;border-radius:50%;background:rgba(61,43,61,.22);cursor:pointer;transition:all .3s}
+  .dot.on{background:var(--accent);width:20px;border-radius:999px}
+
+  .progress{position:fixed;top:0;left:0;height:3px;background:var(--grad-main);width:0;z-index:50;transition:width .1s linear,opacity .3s ease}
+  .helper{position:fixed;top:1rem;right:1.2rem;color:var(--muted);font-size:.72rem;letter-spacing:.06em;z-index:50;opacity:.7}
+  .helper kbd{background:rgba(255,255,255,.7);border:1px solid var(--rule);border-radius:4px;padding:0 .35rem;margin:0 .15rem}
+
+  /* ===== Layout Edit Mode ===== */
+  .edit-toggle{font-size:1.1rem}
+  body.edit-mode .slide.active .polaroid,
+  body.edit-mode .slide.active .vid-frame,
+  body.edit-mode .slide.active .vid-ph{cursor:grab;opacity:1;transform:rotate(var(--rot,0deg));transition:none;touch-action:none}
+  body.edit-mode .polaroid.dragging,
+  body.edit-mode .vid-frame.dragging,
+  body.edit-mode .vid-ph.dragging{cursor:grabbing;z-index:20}
+  body.edit-mode .polaroid.selected,
+  body.edit-mode .vid-frame.selected,
+  body.edit-mode .vid-ph.selected{box-shadow:0 0 0 3px var(--accent),0 0 0 6px rgba(255,92,141,.2)}
+  .resize-handle{display:none;position:absolute;bottom:-7px;right:-7px;width:16px;height:16px;background:var(--accent);border:2px solid #fff;border-radius:50%;cursor:nwse-resize;z-index:10;touch-action:none}
+  body.edit-mode .selected .resize-handle{display:block}
+  body.edit-mode .controls{bottom:220px}
+  body.edit-mode .helper{display:none}
+  .edit-help{display:none;position:fixed;top:1rem;left:1.2rem;background:rgba(255,255,255,.92);padding:8px 14px;border-radius:8px;font-size:.72rem;color:var(--ink);z-index:100;border:1px solid var(--rule)}
+  body.edit-mode .edit-help{display:block}
+  .code-panel{display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1a2e;color:#a6e3a1;padding:12px 16px;font-family:Consolas,'Cascadia Code',monospace;font-size:11px;line-height:1.5;z-index:100;max-height:200px;overflow:auto;border-top:2px solid var(--accent)}
+  body.edit-mode .code-panel{display:block}
+  .code-panel pre{white-space:pre-wrap;word-break:break-all;margin:0}
+  .copy-code-btn{position:sticky;top:0;float:right;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;margin-bottom:4px}
+  .copy-code-btn:hover{background:var(--accent2);color:var(--ink)}
+  .save-file-btn{position:sticky;top:0;float:right;background:var(--accent3);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;margin:0 4px 4px 0}
+  .save-file-btn:hover{background:var(--accent2);color:var(--ink)}
+
+  @media(max-width:900px){
+    .scrapbook{height:50vh}
+    .polaroid{max-width:180px!important}
+    .polaroid img{width:100%!important}
+  }
+</style>
+</head>
+<body>
+<div class="confetti" id="confetti"></div>
+<div class="stage" id="stage">
+
+  <!-- 0 cover -->
+  <section class="slide" data-slide="0">
+    <div class="floats">
+      <span class="fl" style="top:14%;left:12%">🎈</span>
+      <span class="fl drift" style="top:22%;right:14%">🎉</span>
+      <span class="fl spin" style="top:70%;left:18%;font-size:1.6rem">✨</span>
+      <span class="fl" style="top:64%;right:20%;animation-delay:1s">⭐</span>
+      <span class="fl drift" style="top:40%;left:8%;font-size:1.5rem">💛</span>
+    </div>
+    <div class="nine">9</div>
+    <div class="r brand d1">C_LIFE E+1 ADVANCED TMC</div>
+    <h1 class="r cover-title d2">Special Memories & Moments</h1>
+    <p class="r cover-sub d3">2025.09 — 2026.08</p>
+    <p class="r cover-year d4">一起来回顾下C_Life在这一年的精彩瞬间吧~</p>
+  </section>
+
+  <!-- 1 虎丘湿地公园团建 -->
+  <section class="slide" data-slide="1">
+    <div class="floats">
+      <span class="fl" style="top:10%;left:8%">🌳</span>
+      <span class="fl drift" style="top:14%;right:10%">🌿</span>
+      <span class="fl" style="top:78%;left:12%;animation-delay:.5s">🍃</span>
+      <span class="fl spin" style="top:76%;right:14%;font-size:1.5rem">✨</span>
+    </div>
+    <div class="bg-emoji" style="top:10%;left:15%">🌳</div>
+    <div class="r eyebrow d1">OUTDOOR · 户外</div>
+    <h2 class="r h-title d2">虎丘湿地公园团建</h2>
+    <div class="scrapbook">
+      <div class="polaroid pd1" style="top:2%;left:3%;--rot:-7deg">
+        <img src="media/outdoor1.jpg">
+      </div>
+      <div class="polaroid pd2" style="top:4%;right:4%;--rot:5deg">
+        <img src="media/outdoor2.jpg">
+      </div>
+      <div class="polaroid pd3" style="top:52%;left:33%;--rot:-3deg">
+        <img src="media/outdoor3.jpg">
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 游泳团建 placeholder -->
+  <section class="slide" data-slide="2">
+    <div class="floats">
+      <span class="fl" style="top:12%;left:10%">🏊</span>
+      <span class="fl drift" style="top:16%;right:12%">💦</span>
+      <span class="fl" style="top:74%;left:14%;animation-delay:.6s">🌊</span>
+      <span class="fl spin" style="top:72%;right:16%;font-size:1.5rem">✨</span>
+    </div>
+    <div class="bg-emoji" style="top:15%;left:20%">🌊</div>
+    <div class="r eyebrow d1">OUTDOOR · 户外</div>
+    <h2 class="r h-title d2">游泳团建</h2>
+    <div class="r center-box d3 pop">
+      <div class="icon">🏊</div>
+      <div class="text">素材待添加</div>
+    </div>
+  </section>
+
+  <!-- 3 摄影团建 -->
+  <section class="slide" data-slide="3">
+    <div class="floats">
+      <span class="fl" style="top:10%;left:10%">📷</span>
+      <span class="fl drift" style="top:14%;right:12%">📸</span>
+      <span class="fl" style="top:78%;left:14%;animation-delay:.4s">🌿</span>
+      <span class="fl spin" style="top:76%;right:16%;font-size:1.5rem">✨</span>
+    </div>
+    <div class="bg-emoji" style="top:10%;right:15%">📷</div>
+    <div class="r eyebrow d1">OUTDOOR · 户外</div>
+    <h2 class="r h-title d2">摄影团建</h2>
+    <div class="scrapbook">
+      <div class="polaroid pd1" style="top:2%;left:8%;--rot:6deg">
+        <img src="media/photo1.jpg">
+      </div>
+      <div class="polaroid pd2" style="top:8%;right:10%;--rot:-5deg">
+        <img src="media/photo2.jpg">
+      </div>
+      <div class="polaroid pd3" style="top:15%;left:28%;--rot:-3deg">
+        <img src="media/photo3.jpg">
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 万圣节cos -->
+  <section class="slide" data-slide="4">
+    <div class="floats">
+      <span class="fl" style="top:8%;left:8%">🎃</span>
+      <span class="fl drift" style="top:12%;right:10%">👻</span>
+      <span class="fl" style="top:76%;left:12%;animation-delay:.5s">🦇</span>
+      <span class="fl spin" style="top:78%;right:14%;font-size:1.5rem">✨</span>
+    </div>
+    <div class="bg-emoji" style="top:8%;right:12%">🎃</div>
+    <div class="r eyebrow d1">INDOOR · 室内</div>
+    <h2 class="r h-title d2">万圣节 cos 之夜</h2>
+    <div class="scrapbook" style="height:65vh">
+      <div class="polaroid pd1" style="top:0%;left:2%;--rot:-8deg">
+        <img src="media/halloween1.jpg">
+      </div>
+      <div class="polaroid pd2" style="top:2%;right:2%;--rot:7deg">
+        <img src="media/halloween2.jpg">
+      </div>
+      <div class="polaroid pd3" style="top:48%;left:3%;--rot:-5deg">
+        <img src="media/halloween3.jpg">
+      </div>
+      <div class="vid-frame pd4" style="top:35%;right:3%;width:260px;--rot:-1deg">
+        <video src="media/halloween4.mp4" muted playsinline preload="auto"></video>
+        <button class="unmute-btn">🔇</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 摔跤手俱乐部salsa舞 -->
+  <section class="slide" data-slide="5">
+    <div class="floats">
+      <span class="fl" style="top:8%;left:8%">💃</span>
+      <span class="fl drift" style="top:12%;right:10%">🕺</span>
+      <span class="fl" style="top:78%;left:12%;animation-delay:.5s">🎵</span>
+      <span class="fl spin" style="top:76%;right:14%;font-size:1.5rem">✨</span>
+    </div>
+    <div class="bg-emoji" style="top:10%;left:15%">💃</div>
+    <div class="r eyebrow d1">INDOOR · 室内</div>
+    <h2 class="r h-title d2">摔跤手俱乐部 · Salsa 舞</h2>
+    <div class="scrapbook" style="height:65vh">
+      <div class="polaroid pd1" style="top:3%;left:3%;--rot:6deg">
+        <img src="media/wrestling1.jpg">
+      </div>
+      <div class="polaroid pd2" style="top:5%;right:3%;--rot:-7deg">
+        <img src="media/wrestling2.jpg">
+      </div>
+      <div class="vid-frame pd3" style="top:42%;left:50%;margin-left:-150px;width:300px;--rot:1deg">
+        <video src="media/wrestling3.mp4" muted playsinline preload="auto"></video>
+        <button class="unmute-btn">🔇</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 Lunar Finale礼物交换 -->
+  <section class="slide" data-slide="6">
+    <div class="floats">
+      <span class="fl" style="top:10%;left:10%">🎁</span>
+      <span class="fl drift" style="top:14%;right:12%">🎀</span>
+      <span class="fl" style="top:76%;left:14%;animation-delay:.4s">✨</span>
+      <span class="fl spin" style="top:74%;right:16%;font-size:1.5rem">💛</span>
+    </div>
+    <div class="bg-emoji" style="top:10%;right:18%">🎁</div>
+    <div class="r eyebrow d1">INDOOR · 室内</div>
+    <h2 class="r h-title d2">Lunar Finale 礼物交换</h2>
+    <div class="scrapbook">
+      <div class="polaroid pd1" style="top:2%;left:3%;--rot:-6deg">
+        <img src="media/gift1.jpg">
+      </div>
+      <div class="polaroid pd2" style="top:4%;right:4%;--rot:7deg">
+        <img src="media/gift2.jpg">
+      </div>
+      <div class="polaroid pd3" style="top:52%;left:5%;--rot:4deg">
+        <img src="media/gift3.jpg">
+      </div>
+      <div class="polaroid pd4" style="top:50%;right:5%;--rot:-5deg">
+        <img src="media/gift4.jpg">
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 玩剑玉 -->
+  <section class="slide" data-slide="7">
+    <div class="floats">
+      <span class="fl" style="top:10%;left:10%">🎯</span>
+      <span class="fl drift" style="top:14%;right:12%">✨</span>
+      <span class="fl" style="top:78%;left:14%;animation-delay:.5s">💫</span>
+      <span class="fl spin" style="top:76%;right:16%;font-size:1.5rem">🎊</span>
+    </div>
+    <div class="bg-emoji" style="top:12%;left:18%">🎯</div>
+    <div class="r eyebrow d1">INDOOR · 室内</div>
+    <h2 class="r h-title d2">剑玉挑战</h2>
+    <div class="r vid-center-wrap d3">
+      <video src="media/kendama1.mp4" muted playsinline preload="auto"></video>
+      <button class="unmute-btn">🔇</button>
+    </div>
+  </section>
+
+  <!-- 8 电影之夜 -->
+  <section class="slide" data-slide="8">
+    <div class="floats">
+      <span class="fl" style="top:10%;left:10%">🎬</span>
+      <span class="fl drift" style="top:14%;right:12%">🍿</span>
+      <span class="fl" style="top:78%;left:14%;animation-delay:.5s">✨</span>
+      <span class="fl spin" style="top:76%;right:16%;font-size:1.5rem">⭐</span>
+    </div>
+    <div class="bg-emoji" style="top:10%;right:15%">🎬</div>
+    <div class="r eyebrow d1">INDOOR · 室内</div>
+    <h2 class="r h-title d2">电影之夜</h2>
+    <div class="scrapbook" style="height:60vh">
+      <div class="polaroid pd1" style="top:2%;left:5%;--rot:-5deg">
+        <img src="media/movie1.jpg">
+      </div>
+      <div class="polaroid pd2" style="top:8%;right:5%;--rot:6deg">
+        <img src="media/movie2.jpg">
+      </div>
+      <div class="polaroid pd3" style="top:42%;left:8%;--rot:-4deg">
+        <img src="media/movie3.jpg">
+      </div>
+      <div class="polaroid pd4" style="top:48%;right:8%;--rot:5deg">
+        <img src="media/movie4.jpg">
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 八段锦养生 video placeholder -->
+  <section class="slide" data-slide="9">
+    <div class="floats">
+      <span class="fl" style="top:10%;left:10%">🧘</span>
+      <span class="fl drift" style="top:14%;right:12%">🌿</span>
+      <span class="fl" style="top:78%;left:14%;animation-delay:.5s">✨</span>
+      <span class="fl spin" style="top:76%;right:16%;font-size:1.5rem">⭐</span>
+    </div>
+    <div class="bg-emoji" style="top:12%;left:18%">🧘</div>
+    <div class="r eyebrow d1">INDOOR · 室内</div>
+    <h2 class="r h-title d2">八段锦养生</h2>
+    <div class="r center-box d3 pop">
+      <div class="icon">🎬</div>
+      <div class="text">视频待添加</div>
+    </div>
+  </section>
+
+  <!-- 10 圣诞节 -->
+  <section class="slide" data-slide="10">
+    <div class="floats">
+      <span class="fl" style="top:8%;left:8%">🎄</span>
+      <span class="fl drift" style="top:12%;right:10%">🎅</span>
+      <span class="fl" style="top:78%;left:12%;animation-delay:.4s">✨</span>
+      <span class="fl spin" style="top:76%;right:14%;font-size:1.5rem">⭐</span>
+    </div>
+    <div class="bg-emoji" style="top:8%;right:12%">🎄</div>
+    <div class="r eyebrow d1">FESTIVAL · 节日</div>
+    <h2 class="r h-title d2">圣诞节</h2>
+    <div class="scrapbook" style="height:62vh">
+      <div class="polaroid pd1" style="top:3%;left:4%;--rot:-5deg">
+        <img src="media/christmas1.jpg">
+      </div>
+      <div class="polaroid pd2" style="top:5%;right:4%;--rot:6deg">
+        <img src="media/christmas2.jpg">
+      </div>
+      <div class="polaroid pd3" style="top:52%;left:6%;--rot:-3deg">
+        <img src="media/christmas3.jpg">
+      </div>
+      <div class="vid-ph pd4" style="top:50%;right:6%;width:235px;height:195px;--rot:4deg">
+        <div class="icon">🎬</div>
+        <div class="text">视频待添加</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 ending -->
+  <section class="slide" data-slide="11">
+    <div class="floats">
+      <span class="fl" style="top:14%;left:12%">🎉</span>
+      <span class="fl drift" style="top:18%;right:14%">🎊</span>
+      <span class="fl" style="top:68%;left:16%;animation-delay:.5s">🎈</span>
+      <span class="fl spin" style="top:70%;right:18%;font-size:1.6rem">✨</span>
+      <span class="fl drift" style="top:40%;left:10%;font-size:1.4rem">💛</span>
+    </div>
+    <div class="nine">9</div>
+    <div class="r brand d1">C_LIFE</div>
+    <h2 class="r close-title d2">致敬每一个难忘瞬间</h2>
+    <p class="r close-sub d3">故事未完，待续</p>
+    <p class="r close-mark d4">TO BE CONTINUED · 2026</p>
+  </section>
+
+</div>
+
+<div class="progress" id="progress"></div>
+<div class="helper" id="helper"><kbd>←</kbd><kbd>→</kbd> 翻页 · <kbd>空格</kbd> 切换模式</div>
+<div class="controls">
+  <button class="ctrl-btn" id="prev" title="上一页">‹</button>
+  <div class="dots" id="dots"></div>
+  <button class="ctrl-btn" id="next" title="下一页">›</button>
+  <button class="ctrl-btn" id="play" title="切换自动/手动">❚❚ 自动</button>
+  <button class="ctrl-btn edit-toggle" id="edit" title="布局编辑">📐</button>
+</div>
+
+<div class="edit-help" id="editHelp">📐 拖拽移动 · 拖右下角⚪调整大小 · 选中后 ←→ 旋转</div>
+<div class="code-panel" id="codePanel"><button class="save-file-btn" id="saveFile">💾 保存到文件</button><button class="copy-code-btn" id="copyCode">复制代码</button><pre id="codeOutput"></pre></div>
+
+<script>
+var emo=["✨","⭐","💛","💖","🎉","💫","🎈","🌟"];
+var conf=document.getElementById('confetti');
+for(var i=0;i<16;i++){
+  var s=document.createElement('span');s.className='cf';s.textContent=emo[i%emo.length];
+  s.style.left=(Math.random()*100)+'vw';s.style.fontSize=(0.8+Math.random()*1.1)+'rem';
+  s.style.animationDuration=(7+Math.random()*7)+'s';s.style.animationDelay=(-Math.random()*10)+'s';
+  conf.appendChild(s);
+}
+
+var slides=[].slice.call(document.querySelectorAll('.slide'));
+var dots=document.getElementById('dots');
+slides.forEach(function(s,i){
+  var d=document.createElement('div');d.className='dot';if(i===0)d.classList.add('on');
+  d.addEventListener('click',function(){go(i);if(isAutoMode)resetTimer();});
+  dots.appendChild(d);
+});
+
+var idx=0,isAutoMode=true,hold=6500,t0=0,tickRaf=null,currentVideo=null;
+var prog=document.getElementById('progress');
+var helper=document.getElementById('helper');
+var playBtn=document.getElementById('play');
+
+function clearBarWidths(s){[].slice.call(s.querySelectorAll('.bar-fill')).forEach(function(b){b.style.width='0';});}
+function setBarWidths(s){[].slice.call(s.querySelectorAll('.bar-fill')).forEach(function(b){b.style.width=b.getAttribute('data-w')+'%';});}
+function runCounts(s){
+  [].slice.call(s.querySelectorAll('[data-count]')).forEach(function(el){
+    var target=parseInt(el.getAttribute('data-count'),10)||0;countUp(el,target,900);
+  });
+}
+function countUp(el,target,dur){
+  var start=performance.now();var from=0;
+  function step(now){var p=Math.min((now-start)/dur,1);var e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(from+(target-from)*e);if(p<1)requestAnimationFrame(step);else el.textContent=target;}
+  requestAnimationFrame(step);
+}
+
+function go(n){
+  n=(n+slides.length)%slides.length;
+
+  if(currentVideo){
+    currentVideo.pause();
+    currentVideo.removeEventListener('ended',onVideoEnded);
+    currentVideo.removeEventListener('timeupdate',onVideoTimeUpdate);
+    currentVideo.currentTime=0;
+    currentVideo=null;
+  }
+
+  var prevSlide=slides[idx];
+  prevSlide.classList.remove('active');
+  prevSlide.classList.add('prev');
+  clearBarWidths(prevSlide);
+  setTimeout(function(){prevSlide.classList.remove('prev');},800);
+
+  idx=n;
+  var cur=slides[idx];
+  cur.classList.add('active');
+  runCounts(cur);
+  setTimeout(function(){setBarWidths(cur);},300);
+  [].slice.call(dots.children).forEach(function(d,i){d.classList.toggle('on',i===idx);});
+
+  var video=cur.querySelector('video');
+  if(video){
+    currentVideo=video;
+    video.currentTime=0;
+    video.muted=true;
+    var pr=video.play();
+    if(pr)pr.catch(function(){});
+    if(isAutoMode){
+      video.addEventListener('ended',onVideoEnded,{once:true});
+      video.addEventListener('timeupdate',onVideoTimeUpdate);
+    }
+  }else{
+    restartBar();
+  }
+}
+function next(){go(idx+1);}
+function prev(){go(idx-1);}
+
+function onVideoEnded(){
+  if(isAutoMode)next();
+}
+function onVideoTimeUpdate(){
+  if(isAutoMode&&currentVideo&&currentVideo.duration){
+    var p=currentVideo.currentTime/currentVideo.duration;
+    prog.style.width=(p*100)+'%';
+  }
+}
+
+function restartBar(){
+  cancelAnimationFrame(tickRaf);
+  if(!currentVideo)prog.style.width='0%';
+  if(!isAutoMode)return;
+  if(currentVideo)return;
+  t0=performance.now();
+  function tick(now){
+    var p=Math.min((now-t0)/hold,1);
+    prog.style.width=(p*100)+'%';
+    if(p<1)tickRaf=requestAnimationFrame(tick);
+    else next();
+  }
+  tickRaf=requestAnimationFrame(tick);
+}
+function resetTimer(){restartBar();}
+
+function setMode(auto){
+  isAutoMode=auto;
+  playBtn.textContent=isAutoMode?'❚❚ 自动':'▶ 手动';
+  prog.style.opacity=isAutoMode?'1':'0';
+  helper.innerHTML=isAutoMode
+    ?'<kbd>←</kbd><kbd>→</kbd> 翻页 · <kbd>空格</kbd> 切换手动'
+    :'<kbd>←</kbd><kbd>→</kbd> 翻页 · <kbd>空格</kbd> 切换自动';
+  if(isAutoMode){
+    if(currentVideo){
+      currentVideo.addEventListener('ended',onVideoEnded,{once:true});
+      currentVideo.addEventListener('timeupdate',onVideoTimeUpdate);
+    }else{
+      restartBar();
+    }
+  }else{
+    cancelAnimationFrame(tickRaf);
+    if(currentVideo){
+      currentVideo.removeEventListener('ended',onVideoEnded);
+      currentVideo.removeEventListener('timeupdate',onVideoTimeUpdate);
+    }
+  }
+}
+
+document.getElementById('next').addEventListener('click',function(){next();if(isAutoMode)resetTimer();});
+document.getElementById('prev').addEventListener('click',function(){prev();if(isAutoMode)resetTimer();});
+playBtn.addEventListener('click',function(){setMode(!isAutoMode);});
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'){e.preventDefault();next();if(isAutoMode)resetTimer();}
+  if(e.key==='ArrowLeft'){prev();if(isAutoMode)resetTimer();}
+  if(e.key===' '){e.preventDefault();setMode(!isAutoMode);}
+});
+
+document.querySelectorAll('.unmute-btn').forEach(function(btn){
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    var video=btn.parentElement.querySelector('video');
+    if(video){
+      video.muted=!video.muted;
+      btn.textContent=video.muted?'🔇':'🔊';
+    }
+  });
+});
+
+setMode(true);
+go(0);
+
+/* ===== Layout Edit Mode ===== */
+var isEditMode=false,selectedEl=null,dragData=null;
+var editBtn=document.getElementById('edit');
+var codeOutput=document.getElementById('codeOutput');
+var copyCodeBtn=document.getElementById('copyCode');
+
+function addResizeHandles(){
+  var slide=slides[idx];if(!slide)return;
+  slide.querySelectorAll('.scrapbook .polaroid,.scrapbook .vid-frame,.scrapbook .vid-ph').forEach(function(el){
+    if(!el.querySelector('.resize-handle')){var h=document.createElement('div');h.className='resize-handle';el.appendChild(h);}
+  });
+}
+function removeResizeHandles(){document.querySelectorAll('.resize-handle').forEach(function(h){h.remove();});}
+
+function updateCodePanel(){
+  var slide=slides[idx];var sb=slide&&slide.querySelector('.scrapbook');
+  if(!sb){codeOutput.textContent='← 此页面无可编辑内容 →';return;}
+  var lines=[];
+  sb.querySelectorAll('.polaroid,.vid-frame,.vid-ph').forEach(function(el){
+    var cls=el.className.replace(/\b(?:dragging|selected)\b/g,'').replace(/\s+/g,' ').trim();
+    var parts=[];
+    if(el.style.top)parts.push('top:'+el.style.top);
+    if(el.style.left&&el.style.left!=='auto')parts.push('left:'+el.style.left);
+    else if(el.style.right&&el.style.right!=='auto')parts.push('right:'+el.style.right);
+    var rot=el.style.getPropertyValue('--rot');
+    if(rot)parts.push('--rot:'+rot);
+    if(el.style.maxWidth&&el.style.maxWidth!=='500px')parts.push('max-width:'+el.style.maxWidth);
+    if(el.style.width)parts.push('width:'+el.style.width);
+    if(el.style.height)parts.push('height:'+el.style.height);
+    var inner='';
+    var img=el.querySelector('img');var video=el.querySelector('video');
+    var icon=el.querySelector('.icon');var text=el.querySelector('.text');
+    if(img){inner='<img src="'+img.getAttribute('src')+'">';}
+    else if(video){inner='<video src="'+video.getAttribute('src')+'" muted playsinline preload="auto"></video>\n        <button class="unmute-btn">🔇</button>';}
+    else if(icon){inner='<div class="icon">'+icon.textContent+'</div>\n        <div class="text">'+(text?text.textContent:'')+'</div>';}
+    lines.push('      <div class="'+cls+'" style="'+parts.join(';')+'">\n        '+inner+'\n      </div>');
+  });
+  codeOutput.textContent=lines.join('\n');
+}
+
+function toggleEditMode(){
+  isEditMode=!isEditMode;
+  document.body.classList.toggle('edit-mode',isEditMode);
+  if(isEditMode){
+    if(isAutoMode)setMode(false);
+    addResizeHandles();updateCodePanel();
+  }else{
+    removeResizeHandles();
+    if(selectedEl){selectedEl.classList.remove('selected');selectedEl=null;}
+  }
+}
+
+editBtn.addEventListener('click',function(e){e.stopPropagation();toggleEditMode();});
+
+/* keyboard rotation (capture phase, before slide nav) */
+document.addEventListener('keydown',function(e){
+  if(!isEditMode||!selectedEl)return;
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+    e.preventDefault();e.stopPropagation();
+    var rot=parseFloat(selectedEl.style.getPropertyValue('--rot'))||0;
+    rot+=(e.key==='ArrowLeft'?-2:2);
+    selectedEl.style.setProperty('--rot',rot+'deg');
+    updateCodePanel();
+  }
+},true);
+
+/* mouse: drag & resize */
+document.addEventListener('mousedown',function(e){
+  if(!isEditMode)return;
+  var slide=slides[idx];if(!slide)return;
+  var el=e.target.closest('.polaroid,.vid-frame,.vid-ph');
+  if(!el||!slide.contains(el))return;
+  /* resize handle */
+  if(e.target.classList.contains('resize-handle')){
+    var sbR=el.parentElement.getBoundingClientRect();
+    var elR=el.getBoundingClientRect();
+    dragData={el:el,isResize:true,startX:e.clientX,startWidth:elR.width,sbRect:sbR};
+    el.classList.add('dragging');e.preventDefault();e.stopPropagation();return;
+  }
+  /* select + drag */
+  if(selectedEl&&selectedEl!==el)selectedEl.classList.remove('selected');
+  selectedEl=el;el.classList.add('selected');
+  var sbR2=el.parentElement.getBoundingClientRect();
+  var elR2=el.getBoundingClientRect();
+  dragData={el:el,isResize:false,startX:e.clientX,startY:e.clientY,
+    startLeft:elR2.left-sbR2.left,startTop:elR2.top-sbR2.top,sbRect:sbR2};
+  el.classList.add('dragging');e.preventDefault();
+});
+
+document.addEventListener('mousemove',function(e){
+  if(!dragData)return;
+  var el=dragData.el;var sb=dragData.sbRect;
+  if(dragData.isResize){
+    var dx=e.clientX-dragData.startX;
+    var nw=Math.max(80,Math.min(800,Math.round(dragData.startWidth+dx)));
+    if(el.classList.contains('polaroid'))el.style.maxWidth=nw+'px';
+    else el.style.width=nw+'px';
+  }else{
+    var dx2=e.clientX-dragData.startX;var dy=e.clientY-dragData.startY;
+    el.style.left=Math.round((dragData.startLeft+dx2)/sb.width*100*10)/10+'%';
+    el.style.top=Math.round((dragData.startTop+dy)/sb.height*100*10)/10+'%';
+    el.style.right='auto';
+  }
+  updateCodePanel();
+});
+
+document.addEventListener('mouseup',function(){
+  if(!dragData)return;
+  dragData.el.classList.remove('dragging');dragData=null;updateCodePanel();
+});
+
+/* deselect on outside click */
+document.addEventListener('mousedown',function(e){
+  if(!isEditMode)return;
+  if(!e.target.closest('.polaroid,.vid-frame,.vid-ph,.resize-handle,.code-panel,.controls,.edit-help')){
+    if(selectedEl){selectedEl.classList.remove('selected');selectedEl=null;}
+  }
+});
+
+/* copy code */
+copyCodeBtn.addEventListener('click',function(){
+  var code=codeOutput.textContent;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(code).then(function(){
+      copyCodeBtn.textContent='✓ 已复制';
+      setTimeout(function(){copyCodeBtn.textContent='复制代码';},2000);
+    });
+  }else{
+    var ta=document.createElement('textarea');ta.value=code;
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);
+    copyCodeBtn.textContent='✓ 已复制';
+    setTimeout(function(){copyCodeBtn.textContent='复制代码';},2000);
+  }
+});
+
+/* wrap go() to handle slide changes in edit mode */
+var origGo=go;
+go=function(n){
+  origGo(n);
+  if(isEditMode){
+    if(selectedEl){selectedEl.classList.remove('selected');selectedEl=null;}
+    removeResizeHandles();
+    setTimeout(function(){addResizeHandles();updateCodePanel();},200);
+  }
+};
+
+/* ===== localStorage auto-save & restore ===== */
+var STORAGE_KEY='clife_part2_layout';
+
+function saveToStorage(){
+  var data={};
+  slides.forEach(function(slide,i){
+    var sb=slide.querySelector('.scrapbook');
+    if(!sb)return;
+    var els=sb.querySelectorAll('.polaroid,.vid-frame,.vid-ph');
+    if(!els.length)return;
+    var arr=[];
+    els.forEach(function(el){
+      var d={};
+      d.cls=el.className.replace(/\b(?:dragging|selected)\b/g,'').replace(/\s+/g,' ').trim();
+      if(el.style.top)d.top=el.style.top;
+      if(el.style.left&&el.style.left!=='auto')d.left=el.style.left;
+      else if(el.style.right&&el.style.right!=='auto')d.right=el.style.right;
+      var rot=el.style.getPropertyValue('--rot');
+      if(rot)d.rot=rot;
+      if(el.style.maxWidth&&el.style.maxWidth!=='500px')d.mw=el.style.maxWidth;
+      if(el.style.width)d.w=el.style.width;
+      if(el.style.height)d.h=el.style.height;
+      arr.push(d);
+    });
+    data[i]=arr;
+  });
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}catch(e){}
+}
+
+function restoreFromStorage(){
+  var raw;
+  try{raw=localStorage.getItem(STORAGE_KEY);}catch(e){return;}
+  if(!raw)return;
+  var data;
+  try{data=JSON.parse(raw);}catch(e){return;}
+  slides.forEach(function(slide,i){
+    var arr=data[i];if(!arr)return;
+    var sb=slide.querySelector('.scrapbook');if(!sb)return;
+    var els=sb.querySelectorAll('.polaroid,.vid-frame,.vid-ph');
+    els.forEach(function(el,idx){
+      var d=arr[idx];if(!d)return;
+      if(d.top)el.style.top=d.top;
+      if(d.left)el.style.left=d.left;
+      if(d.right)el.style.right=d.right;
+      if(d.rot)el.style.setProperty('--rot',d.rot);
+      if(d.mw)el.style.maxWidth=d.mw;
+      if(d.w)el.style.width=d.w;
+      if(d.h)el.style.height=d.h;
+    });
+  });
+}
+
+/* auto-save on drag end & resize end */
+var origMouseUp=document.onmouseup;
+document.addEventListener('mouseup',function(){
+  if(isEditMode)saveToStorage();
+});
+
+/* restore on load */
+restoreFromStorage();
+
+/* ===== Save to File (File System Access API) ===== */
+var fileHandle=null;
+var saveFileBtn=document.getElementById('saveFile');
+
+function generateFullHTML(){
+  /* clone document, clean up edit-mode artifacts */
+  var clone=document.documentElement.cloneNode(true);
+  /* remove resize handles */
+  clone.querySelectorAll('.resize-handle').forEach(function(h){h.remove();});
+  /* remove edit-mode classes */
+  clone.classList.remove('edit-mode');
+  clone.querySelectorAll('.dragging,.selected').forEach(function(el){
+    el.classList.remove('dragging');el.classList.remove('selected');
+  });
+  /* remove dynamically added inline styles from edit mode */
+  clone.querySelectorAll('.polaroid,.vid-frame,.vid-ph').forEach(function(el){
+    if(el.style.right==='auto')el.style.removeProperty('right');
+  });
+  /* remove the file handle script vars (not needed in saved file) */
+  var html='<!DOCTYPE html>\n'+clone.outerHTML;
+  return html;
+}
+
+async function saveToFile(){
+  var html=generateFullHTML();
+  try{
+    if(!fileHandle){
+      fileHandle=await window.showSaveFilePicker({
+        suggestedName:'part2.html',
+        types:[{description:'HTML',accept:{'text/html':['.html','.htm']}}]
+      });
+    }
+    var writable=await fileHandle.createWritable();
+    await writable.write(html);
+    await writable.close();
+    saveFileBtn.textContent='✓ 已保存';
+    setTimeout(function(){saveFileBtn.textContent='💾 保存到文件';},2000);
+  }catch(err){
+    if(err.name==='AbortError')return;
+    /* fallback: download */
+    var blob=new Blob([html],{type:'text/html'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;a.download='part2.html';a.click();
+    URL.revokeObjectURL(url);
+    saveFileBtn.textContent='✓ 已下载';
+    setTimeout(function(){saveFileBtn.textContent='💾 保存到文件';},2000);
+  }
+}
+
+saveFileBtn.addEventListener('click',function(){saveToFile();});
+
+</script>
+</body>
+</html>
