@@ -57,9 +57,9 @@
 
   .brand{font-size:1.05rem;letter-spacing:.42em;color:var(--accent);font-weight:700}
   .cover-title{font-size:clamp(2.6rem,6vw,5.4rem);font-weight:800;letter-spacing:.04em;margin-top:1.4rem;
-    background:var(--grad-main);-webkit-background-clip:text;background-clip:text;color:transparent}
+    background:var(--grad-main);-webkit-background-clip:text;background-clip:text;color:transparent;text-align: center;}
   .cover-sub{font-size:clamp(1.05rem,1.8vw,1.5rem);color:var(--muted);margin-top:1.6rem;letter-spacing:.18em}
-  .cover-year{font-size:clamp(1.3rem,2.2vw,1.9rem);color:var(--ink);margin-top:2.2rem;font-weight:300;letter-spacing:.3em}
+  .cover-year{font-size:clamp(1.0rem,1.8vw,1.5rem);color:var(--ink);margin-top:2.2rem;font-weight:300;letter-spacing:.3em}
   .nine{position:absolute;font-size:46vh;line-height:1;font-weight:800;color:rgba(255,92,141,.06);z-index:0;user-select:none}
 
   .eyebrow{font-size:.92rem;letter-spacing:.32em;color:var(--accent);font-weight:700;text-transform:uppercase}
@@ -69,6 +69,11 @@
 
   /* scrapbook / polaroid */
   .scrapbook{position:relative;width:92%;max-width:960px;height:62vh;margin-top:1.2rem}
+.title-group {
+    position: relative;
+    top: -30px;    /* 整体上移，相对于 .slide */
+    text-align: center;   /* 让标题居中（如果你希望它们居中） */
+}
   .polaroid,.vid-frame,.vid-ph{
     position:absolute;background:#fff;padding:10px;border-radius:4px;
     box-shadow:0 8px 24px rgba(0,0,0,.14),0 2px 8px rgba(0,0,0,.08);
@@ -100,7 +105,7 @@
   /* centered video (video-only slides) */
   .vid-center-wrap{position:relative;display:inline-block;background:#fff;padding:12px;border-radius:6px;
     box-shadow:0 12px 34px rgba(255,92,141,.16),0 4px 12px rgba(0,0,0,.1)}
-  .vid-center-wrap video{display:block;border-radius:4px;max-width:420px;max-height:58vh;width:auto;height:auto}
+  .vid-center-wrap video{display:block;border-radius:4px;max-width:700px;max-height:58vh;width:auto;height:auto}
 
   /* centered placeholder box */
   .center-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
@@ -187,17 +192,19 @@
       <span class="fl spin" style="top:76%;right:14%;font-size:1.5rem">✨</span>
     </div>
     <div class="bg-emoji" style="top:10%;left:15%">🌳</div>
-    <div class="r eyebrow d1">OUTDOOR · 户外</div>
-    <h2 class="r h-title d2">虎丘湿地公园团建</h2>
+    <div class="title-group">
+      <div class="r eyebrow d1">Spring Fever, Childhood Forever</div>
+      <h2 class="r h-title d2">Outings in Huqiu Wetland Park</h2>
+    </div>
     <div class="scrapbook">
-      <div class="polaroid pd1" style="top:2%;left:3%;--rot:-7deg">
+      <div class="polaroid pd1" style="top:-6%;left:-10%;--rot:-7deg;z-index: 1;">
         <img src="media/outdoor1.jpg">
       </div>
-      <div class="polaroid pd2" style="top:4%;right:4%;--rot:5deg">
-        <img src="media/outdoor2.jpg">
-      </div>
-      <div class="polaroid pd3" style="top:52%;left:33%;--rot:-3deg">
+      <div class="polaroid pd2" style="top:-5%;right:-2%;--rot:5deg;z-index: 3;">
         <img src="media/outdoor3.jpg">
+      </div>
+      <div class="polaroid pd3" style="top:48%;left:25%;--rot:-3deg;z-index: 2;">
+        <img src="media/outdoor2.jpg">
       </div>
     </div>
   </section>
@@ -211,8 +218,8 @@
       <span class="fl spin" style="top:72%;right:16%;font-size:1.5rem">✨</span>
     </div>
     <div class="bg-emoji" style="top:15%;left:20%">🌊</div>
-    <div class="r eyebrow d1">OUTDOOR · 户外</div>
-    <h2 class="r h-title d2">游泳团建</h2>
+    <div class="r eyebrow d1">Water Whimsy, Summer Splash</div>
+    <h2 class="r h-title d2">Swimming Night at Olympic Sports Centre</h2>
     <div class="r center-box d3 pop">
       <div class="icon">🏊</div>
       <div class="text">素材待添加</div>
@@ -228,17 +235,22 @@
       <span class="fl spin" style="top:76%;right:16%;font-size:1.5rem">✨</span>
     </div>
     <div class="bg-emoji" style="top:10%;right:15%">📷</div>
-    <div class="r eyebrow d1">OUTDOOR · 户外</div>
-    <h2 class="r h-title d2">摄影团建</h2>
+    <div class="title-group">
+      <div class="r eyebrow d1">Shutter Stories, Street Souls</div>
+      <h2 class="r h-title d2">传奇摄影师扫大街</h2>
+    </div>
     <div class="scrapbook">
-      <div class="polaroid pd1" style="top:2%;left:8%;--rot:6deg">
+      <div class="polaroid pd1" style="top:2%;right:-6%;--rot:6deg;z-index:2;">
         <img src="media/photo1.jpg">
       </div>
-      <div class="polaroid pd2" style="top:8%;right:10%;--rot:-5deg">
+      <div class="polaroid pd2" style="top:8%;right:10%;--rot:-5deg;z-index: 1;">
         <img src="media/photo2.jpg">
       </div>
-      <div class="polaroid pd3" style="top:15%;left:28%;--rot:-3deg">
+      <div class="polaroid pd3" style="top:15%;left:15%;--rot:-3deg">
         <img src="media/photo3.jpg">
+      </div>
+      <div class="polaroid pd4" style="top:2%;left:-10%;--rot:6deg">
+        <img src="media/photo4.jpg">
       </div>
     </div>
   </section>
@@ -252,19 +264,21 @@
       <span class="fl spin" style="top:78%;right:14%;font-size:1.5rem">✨</span>
     </div>
     <div class="bg-emoji" style="top:8%;right:12%">🎃</div>
-    <div class="r eyebrow d1">INDOOR · 室内</div>
-    <h2 class="r h-title d2">万圣节 cos 之夜</h2>
+    <div class="title-group">
+      <div class="r eyebrow d1">Spells & Shadows, Masks & Magic</div>
+      <h2 class="r h-title d2">Halloween Cosplay</h2>
+    </div>
     <div class="scrapbook" style="height:65vh">
-      <div class="polaroid pd1" style="top:0%;left:2%;--rot:-8deg">
+      <div class="polaroid pd1" style="top:-7%;left:-9%;--rot:-8deg">
         <img src="media/halloween1.jpg">
       </div>
-      <div class="polaroid pd2" style="top:2%;right:2%;--rot:7deg">
+      <div class="polaroid pd2" style="top:2%;right:19%;--rot:7deg;width:320px;">
         <img src="media/halloween2.jpg">
       </div>
-      <div class="polaroid pd3" style="top:48%;left:3%;--rot:-5deg">
+      <div class="polaroid pd3" style="top:9%;right:-15%;--rot:-5deg;width:330px;">
         <img src="media/halloween3.jpg">
       </div>
-      <div class="vid-frame pd4" style="top:35%;right:3%;width:260px;--rot:-1deg">
+      <div class="vid-frame pd4" style="top:50%;left:-5%;width:500px;--rot:-1deg">
         <video src="media/halloween4.mp4" muted playsinline preload="auto"></video>
         <button class="unmute-btn">🔇</button>
       </div>
@@ -280,16 +294,18 @@
       <span class="fl spin" style="top:76%;right:14%;font-size:1.5rem">✨</span>
     </div>
     <div class="bg-emoji" style="top:10%;left:15%">💃</div>
-    <div class="r eyebrow d1">INDOOR · 室内</div>
-    <h2 class="r h-title d2">摔跤手俱乐部 · Salsa 舞</h2>
+    <div class="title-group">
+      <div class="r eyebrow d1">Sips & Sways, Spice & Steps</div>
+      <h2 class="r h-title d2">Spanish Salsa Dancing Night</h2>
+    </div>
     <div class="scrapbook" style="height:65vh">
-      <div class="polaroid pd1" style="top:3%;left:3%;--rot:6deg">
+      <div class="polaroid pd1" style="top:3%;left:-13%;--rot:6deg;width:350px;">
         <img src="media/wrestling1.jpg">
       </div>
-      <div class="polaroid pd2" style="top:5%;right:3%;--rot:-7deg">
+      <div class="polaroid pd2" style="top:5%;right:-25%;--rot:-7deg">
         <img src="media/wrestling2.jpg">
       </div>
-      <div class="vid-frame pd3" style="top:42%;left:50%;margin-left:-150px;width:300px;--rot:1deg">
+      <div class="vid-frame pd3" style="top:10%;left:36%;margin-left:-150px;width:600px;--rot:1deg">
         <video src="media/wrestling3.mp4" muted playsinline preload="auto"></video>
         <button class="unmute-btn">🔇</button>
       </div>
@@ -305,19 +321,21 @@
       <span class="fl spin" style="top:74%;right:16%;font-size:1.5rem">💛</span>
     </div>
     <div class="bg-emoji" style="top:10%;right:18%">🎁</div>
-    <div class="r eyebrow d1">INDOOR · 室内</div>
-    <h2 class="r h-title d2">Lunar Finale 礼物交换</h2>
+    <div class="title-group">
+      <div class="r eyebrow d1">Indoor & Intimate, Gifts & Goodbyes</div>
+      <h2 class="r h-title d2">Lunar Finale Gift Exchange</h2>
+    </div>
     <div class="scrapbook">
-      <div class="polaroid pd1" style="top:2%;left:3%;--rot:-6deg">
+      <div class="polaroid pd1" style="top:20%;left:-13%;--rot:-6deg">
         <img src="media/gift1.jpg">
       </div>
-      <div class="polaroid pd2" style="top:4%;right:4%;--rot:7deg">
+      <div class="polaroid pd2" style="top:-6%;right:-6%;--rot:7deg;width: 320px;">
         <img src="media/gift2.jpg">
       </div>
-      <div class="polaroid pd3" style="top:52%;left:5%;--rot:4deg">
+      <div class="polaroid pd3" style="top:-12%;right:30%;--rot:4deg;width:310px;z-index:2;">
         <img src="media/gift3.jpg">
       </div>
-      <div class="polaroid pd4" style="top:50%;right:5%;--rot:-5deg">
+      <div class="polaroid pd4" style="top:42%;right:5%;--rot:-5deg;z-index:1;">
         <img src="media/gift4.jpg">
       </div>
     </div>
@@ -332,8 +350,10 @@
       <span class="fl spin" style="top:76%;right:16%;font-size:1.5rem">🎊</span>
     </div>
     <div class="bg-emoji" style="top:12%;left:18%">🎯</div>
-    <div class="r eyebrow d1">INDOOR · 室内</div>
-    <h2 class="r h-title d2">剑玉挑战</h2>
+    <div class="title-group">
+      <div class="r eyebrow d1">玩转剑玉</div>
+      <h2 class="r h-title d2">Kendama Challenge, Balance & Grit</h2>
+    </div>
     <div class="r vid-center-wrap d3">
       <video src="media/kendama1.mp4" muted playsinline preload="auto"></video>
       <button class="unmute-btn">🔇</button>
@@ -349,19 +369,21 @@
       <span class="fl spin" style="top:76%;right:16%;font-size:1.5rem">⭐</span>
     </div>
     <div class="bg-emoji" style="top:10%;right:15%">🎬</div>
-    <div class="r eyebrow d1">INDOOR · 室内</div>
-    <h2 class="r h-title d2">电影之夜</h2>
+    <div class="title-group">
+      <div class="r eyebrow d1">《Back to Future》《Badapest Hotel》</div>
+      <h2 class="r h-title d2">Movie Night, Snacks & Discussion</h2>
+    </div>
     <div class="scrapbook" style="height:60vh">
-      <div class="polaroid pd1" style="top:2%;left:5%;--rot:-5deg">
+      <div class="polaroid pd1" style="top:0%;left:-13%;--rot:-5deg">
         <img src="media/movie1.jpg">
       </div>
-      <div class="polaroid pd2" style="top:8%;right:5%;--rot:6deg">
+      <div class="polaroid pd2" style="top:-10%;right:5%;--rot:6deg">
         <img src="media/movie2.jpg">
       </div>
-      <div class="polaroid pd3" style="top:42%;left:8%;--rot:-4deg">
+      <div class="polaroid pd3" style="top:42%;right:20%;--rot:-4deg;width:260px;">
         <img src="media/movie3.jpg">
       </div>
-      <div class="polaroid pd4" style="top:48%;right:8%;--rot:5deg">
+      <div class="polaroid pd4" style="top:40%;right:-14%;--rot:5deg;width:260px;">
         <img src="media/movie4.jpg">
       </div>
     </div>
@@ -376,7 +398,7 @@
       <span class="fl spin" style="top:76%;right:16%;font-size:1.5rem">⭐</span>
     </div>
     <div class="bg-emoji" style="top:12%;left:18%">🧘</div>
-    <div class="r eyebrow d1">INDOOR · 室内</div>
+    <div class="r eyebrow d1">Breathe & Flow, Calm & Glow</div>
     <h2 class="r h-title d2">八段锦养生</h2>
     <div class="r center-box d3 pop">
       <div class="icon">🎬</div>
@@ -393,22 +415,21 @@
       <span class="fl spin" style="top:76%;right:14%;font-size:1.5rem">⭐</span>
     </div>
     <div class="bg-emoji" style="top:8%;right:12%">🎄</div>
-    <div class="r eyebrow d1">FESTIVAL · 节日</div>
-    <h2 class="r h-title d2">圣诞节</h2>
+    <div class="title-group">
+      <div class="r eyebrow d1">Knock, Knock, Santa's Here</div>
+      <h2 class="r h-title d2">Santa & Surprises, Gifts & Grins</h2>
+    </div>
     <div class="scrapbook" style="height:62vh">
-      <div class="polaroid pd1" style="top:3%;left:4%;--rot:-5deg">
+      <div class="polaroid pd1" style="top:3%;left:-14%;--rot:-5deg">
         <img src="media/christmas1.jpg">
       </div>
-      <div class="polaroid pd2" style="top:5%;right:4%;--rot:6deg">
+      <div class="polaroid pd2" style="top:5%;right:-7%;--rot:6deg;width:350px;">
         <img src="media/christmas2.jpg">
       </div>
-      <div class="polaroid pd3" style="top:52%;left:6%;--rot:-3deg">
+      <div class="polaroid pd3" style="top:-10%;left:37%;--rot:-3deg;width:350px;">
         <img src="media/christmas3.jpg">
       </div>
-      <div class="vid-ph pd4" style="top:50%;right:6%;width:235px;height:195px;--rot:4deg">
-        <div class="icon">🎬</div>
-        <div class="text">视频待添加</div>
-      </div>
+
     </div>
   </section>
 
