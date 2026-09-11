@@ -421,10 +421,27 @@
     .guest-row{flex-direction:column;gap:1rem;height:auto}
     .guest-card{flex:0 0 auto}
   }
+
+  .bgm-btn{position:fixed;top:1.2rem;right:1.2rem;z-index:50;width:42px;height:42px;border-radius:50%;
+    border:1px solid var(--rule);background:rgba(255,255,255,.7);backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.15rem;
+    color:var(--accent);transition:all .3s;box-shadow:var(--shadow)}
+  .bgm-btn:hover{transform:scale(1.1);color:var(--accent2)}
+  .bgm-btn.playing{color:var(--accent2)}
+  .bgm-btn .eq{display:flex;gap:2px;align-items:flex-end;height:14px}
+  .bgm-btn .eq span{width:3px;background:var(--accent2);border-radius:2px;animation:eqbar .8s ease-in-out infinite}
+  .bgm-btn .eq span:nth-child(1){height:40%;animation-delay:0s}
+  .bgm-btn .eq span:nth-child(2){height:80%;animation-delay:.15s}
+  .bgm-btn .eq span:nth-child(3){height:60%;animation-delay:.3s}
+  .bgm-btn .eq span:nth-child(4){height:90%;animation-delay:.45s}
+  .bgm-btn:not(.playing) .eq span{animation-play-state:paused;height:20%}
+  @keyframes eqbar{0%,100%{height:30%}50%{height:100%}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
 </head>
 <body>
+<audio id="bgm" loop><source src="media/Buddy.mp3" type="audio/mpeg"></audio>
+<button class="bgm-btn" id="bgmBtn" title="背景音乐"><span class="eq"><span></span><span></span><span></span><span></span></span></button>
 <div class="confetti" id="confetti"></div>
 <div class="stage" id="stage">
 
@@ -1691,6 +1708,24 @@ async function saveToFile(){
 
 saveFileBtn.addEventListener('click',function(){saveToFile();});
 
+// BGM toggle
+var bgm=document.getElementById('bgm');
+var bgmBtn=document.getElementById('bgmBtn');
+bgm.volume=0.4;
+bgmBtn.addEventListener('click',function(){
+  if(bgm.paused){
+    bgm.play();
+    bgmBtn.classList.add('playing');
+    bgmBtn.title='暂停音乐';
+  }else{
+    bgm.pause();
+    bgmBtn.classList.remove('playing');
+    bgmBtn.title='播放音乐';
+  }
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='m'||e.key==='M'){bgmBtn.click();}
+});
 
 </script>
 </body>
