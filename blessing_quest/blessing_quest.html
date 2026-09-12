@@ -179,6 +179,31 @@ body{display:flex;align-items:center;justify-content:center;position:relative}
 .npc-badge::before{content:"\25B6";font-size:.7rem;color:#4dd0c0}
 @keyframes npcBadgeIn{from{opacity:0;transform:translateX(-50%) translateY(-15px) scale(.7)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
 
+/* Video controls - pixel style progress bar */
+.video-controls{position:absolute;bottom:4vh;left:50%;transform:translateX(-50%);
+  z-index:25;width:70%;max-width:500px;
+  display:none;flex-direction:column;align-items:center;gap:.5rem}
+.video-controls.show{display:flex}
+.vc-progress{width:100%;height:10px;background:#1a1530;border:2px solid #3d2b5a;
+  position:relative;cursor:pointer;overflow:hidden}
+.vc-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#4dd0c0,#ffd700);
+  box-shadow:0 0 8px rgba(255,215,0,.5);transition:width .1s linear}
+.vc-progress-handle{position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:14px;height:14px;background:#ffd700;border-radius:2px;
+  box-shadow:0 0 8px rgba(255,215,0,.8);left:0%}
+.vc-buttons{display:flex;gap:.4rem;align-items:center}
+.vc-btn{width:36px;height:30px;border:2px solid #667eea;
+  background:rgba(10,8,20,.85);color:#fff;cursor:pointer;
+  font-family:'VT323',monospace;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;line-height:1}
+.vc-btn:hover{background:rgba(102,126,234,.3);transform:scale(1.05)}
+.vc-btn.play{width:44px;border-color:#ffd700;color:#ffd700}
+.vc-btn.play:hover{background:rgba(255,215,0,.15)}
+.vc-time{font-family:'VT323',monospace;font-size:.85rem;color:#a89cc8;
+  letter-spacing:.05em;min-width:80px;text-align:center}
+.vc-skip{border-color:#4dd0c0;color:#4dd0c0;font-size:.8rem}
+
 /* ===== SAGE INTRO ===== */
 .sage-scene{background:radial-gradient(ellipse at center,#2a0a3a,#0a0515)}
 .sage-intro{text-align:center}
@@ -526,6 +551,20 @@ body{display:flex;align-items:center;justify-content:center;position:relative}
     <div class="video-wrap">
       <div class="npc-badge" id="npcBadge"></div>
       <video id="videoPlayer" playsinline></video>
+      <div class="video-controls" id="videoControls">
+        <div class="vc-progress" id="vcProgress">
+          <div class="vc-progress-fill" id="vcProgressFill"></div>
+          <div class="vc-progress-handle" id="vcProgressHandle"></div>
+        </div>
+        <div class="vc-buttons">
+          <button class="vc-btn vc-skip" id="vcRew10" title="Rewind 10s">&#9198;10</button>
+          <button class="vc-btn vc-skip" id="vcRew5" title="Rewind 5s">&#9198;5</button>
+          <button class="vc-btn play" id="vcPlay" title="Play/Pause">&#10074;&#10074;</button>
+          <button class="vc-btn vc-skip" id="vcFwd5" title="Forward 5s">5&#9197;</button>
+          <button class="vc-btn vc-skip" id="vcFwd10" title="Forward 10s">10&#9197;</button>
+          <div class="vc-time" id="vcTime">0:00 / 0:00</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -942,6 +981,7 @@ function playVideo(src, callback, npcName){
     done = true;
     if(videoFailTimer){ clearTimeout(videoFailTimer); videoFailTimer = null; }
     badge.classList.remove('show');
+    $('videoControls').classList.remove('show');
     state.videoEndHandler = null;
     if(callback) callback();
   }
@@ -957,12 +997,96 @@ function playVideo(src, callback, npcName){
     // Fail silently - use timeout as fallback
   });
   videoPlayer.addEventListener('ended', state.videoEndHandler);
+  // Show controls
+  $('videoControls').classList.add('show');
+  updatePlayBtn();
   // Fail-safe: if video hasn't ended in 90 seconds, skip it
   videoFailTimer = setTimeout(function(){
     console.log('Video timeout, skipping:', src);
     finish();
   }, 90000);
 }
+
+// ===== VIDEO CONTROLS =====
+function fmtTime(s){
+  s = Math.max(0, Math.floor(s||0));
+  var m = Math.floor(s/60), sec = s%60;
+  return m+':'+(sec<10?'0':'')+sec;
+}
+function updatePlayBtn(){
+  var btn = $('vcPlay');
+  if(videoPlayer.paused){
+    btn.textContent = '\u25B6';
+  }else{
+    btn.innerHTML = '\u23F8\u23F8';
+  }
+}
+function updateProgress(){
+  if(!videoPlayer.duration || isNaN(videoPlayer.duration)) return;
+  var pct = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+  $('vcProgressFill').style.width = pct+'%';
+  $('vcProgressHandle').style.left = pct+'%';
+  $('vcTime').textContent = fmtTime(videoPlayer.currentTime)+' / '+fmtTime(videoPlayer.duration);
+}
+
+videoPlayer.addEventListener('timeupdate', updateProgress);
+videoPlayer.addEventListener('loadedmetadata', updateProgress);
+videoPlayer.addEventListener('play', updatePlayBtn);
+videoPlayer.addEventListener('pause', updatePlayBtn);
+
+$('vcPlay').addEventListener('click', function(e){
+  e.stopPropagation();
+  if(videoPlayer.paused) videoPlayer.play().catch(function(){});
+  else videoPlayer.pause();
+});
+
+$('vcRew5').addEventListener('click', function(e){
+  e.stopPropagation();
+  videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 5);
+});
+$('vcRew10').addEventListener('click', function(e){
+  e.stopPropagation();
+  videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+});
+$('vcFwd5').addEventListener('click', function(e){
+  e.stopPropagation();
+  videoPlayer.currentTime = Math.min(videoPlayer.duration||0, videoPlayer.currentTime + 5);
+});
+$('vcFwd10').addEventListener('click', function(e){
+  e.stopPropagation();
+  videoPlayer.currentTime = Math.min(videoPlayer.duration||0, videoPlayer.currentTime + 10);
+});
+
+// Click/drag progress bar to seek
+var vcDragging = false;
+function seekFromEvent(e){
+  var bar = $('vcProgress');
+  var rect = bar.getBoundingClientRect();
+  var x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  var pct = Math.max(0, Math.min(1, x / rect.width));
+  if(videoPlayer.duration){
+    videoPlayer.currentTime = pct * videoPlayer.duration;
+  }
+}
+$('vcProgress').addEventListener('mousedown', function(e){
+  e.stopPropagation();
+  vcDragging = true;
+  seekFromEvent(e);
+});
+document.addEventListener('mousemove', function(e){
+  if(vcDragging) seekFromEvent(e);
+});
+document.addEventListener('mouseup', function(){
+  vcDragging = false;
+});
+
+// Keyboard shortcuts for video
+document.addEventListener('keydown', function(e){
+  if(state.scene !== 3) return; // only on video scene
+  if(e.key === 'ArrowLeft'){ e.preventDefault(); videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime-5); }
+  else if(e.key === 'ArrowRight'){ e.preventDefault(); videoPlayer.currentTime = Math.min(videoPlayer.duration||0, videoPlayer.currentTime+5); }
+  else if(e.key === ' '){ e.preventDefault(); if(videoPlayer.paused)videoPlayer.play().catch(function(){}); else videoPlayer.pause(); }
+});
 
 // ===== SAGE INTRO =====
 function showSageIntro(sage, callback){
@@ -1318,7 +1442,16 @@ function init(){
   });
 
   document.addEventListener('keydown', function(e){
-    if(e.code==='Space'){ e.preventDefault(); togglePause(); }
+    // On video scene, Space controls video play/pause instead of game pause
+    if(e.code==='Space'){
+      e.preventDefault();
+      if(state.scene === 3 && videoPlayer.src){
+        if(videoPlayer.paused) videoPlayer.play().catch(function(){});
+        else videoPlayer.pause();
+      }else{
+        togglePause();
+      }
+    }
     else if(e.key==='m'||e.key==='M'){ setMuted(!state.muted); }
     else if(e.key==='r'||e.key==='R'){ restartGame(); }
     else if(e.key==='l'||e.key==='L'){

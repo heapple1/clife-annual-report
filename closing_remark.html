@@ -34,6 +34,24 @@
   body::before{width:60vw;height:60vw;background:radial-gradient(circle,rgba(102,126,234,.15),transparent 60%);top:-15vw;right:-10vw}
   body::after{width:55vw;height:55vw;background:radial-gradient(circle,rgba(255,92,141,.12),transparent 60%);bottom:-15vw;left:-10vw}
 
+  /* Music button */
+  .music-btn{position:fixed;top:1.2rem;right:1.2rem;z-index:100;
+    width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);
+    background:rgba(26,10,46,.8);color:var(--gold);font-size:1.1rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 16px rgba(255,215,0,.25);transition:all .25s;
+    -webkit-user-select:none;user-select:none}
+  .music-btn:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(255,215,0,.4)}
+  .music-btn .bars{display:flex;align-items:flex-end;gap:3px;height:18px}
+  .music-btn .bar{width:3px;background:var(--gold);border-radius:1px;
+    animation:barBounce .8s ease-in-out infinite}
+  .music-btn .bar:nth-child(1){height:40%;animation-delay:0s}
+  .music-btn .bar:nth-child(2){height:70%;animation-delay:.15s}
+  .music-btn .bar:nth-child(3){height:50%;animation-delay:.3s}
+  .music-btn .bar:nth-child(4){height:80%;animation-delay:.45s}
+  .music-btn.muted .bar{animation:none;height:30%;opacity:.4}
+  @keyframes barBounce{0%,100%{transform:scaleY(.6)}50%{transform:scaleY(1)}}
+
   .confetti{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
   .cf{position:absolute;bottom:-10vh;font-size:1.1rem;opacity:0;animation:floatup linear infinite;
     filter:drop-shadow(0 0 4px rgba(255,215,0,.5))}
@@ -279,6 +297,10 @@
 <body>
 
 <div class="confetti" id="confetti"></div>
+
+<div class="music-btn" id="musicBtn" title="Music">
+  <div class="bars"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+</div>
 
 <div class="eyebrow">C_Life</div>
 <div class="title">The Power of C</div>
@@ -600,6 +622,45 @@ resetBtn.addEventListener('click',function(){
     },i*100);
   });
 });
+
+// ===== MUSIC =====
+var bgm=new Audio('media/bgm_closing.mp3');
+bgm.loop=true;
+bgm.volume=0.35; // VOLUME: change 0.35 to adjust (0 = silent, 1 = full)
+var musicBtn=document.getElementById('musicBtn');
+var musicStarted=false;
+var musicMuted=false;
+
+function toggleMusic(){
+  if(!musicStarted){
+    musicStarted=true;
+    bgm.play().catch(function(){});
+    musicBtn.classList.remove('muted');
+  }else if(musicMuted){
+    musicMuted=false;
+    bgm.muted=false;
+    musicBtn.classList.remove('muted');
+  }else{
+    musicMuted=true;
+    bgm.muted=true;
+    musicBtn.classList.add('muted');
+  }
+}
+
+musicBtn.addEventListener('click', function(e){
+  e.stopPropagation();
+  toggleMusic();
+});
+
+// Start music on first user interaction (browser autoplay policy)
+document.addEventListener('click', function startOnFirstClick(){
+  if(!musicStarted){
+    musicStarted=true;
+    bgm.play().catch(function(){});
+    musicBtn.classList.remove('muted');
+  }
+  document.removeEventListener('click', startOnFirstClick);
+}, {once:true});
 </script>
 </body>
 </html>
