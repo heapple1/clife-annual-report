@@ -167,6 +167,18 @@ body{display:flex;align-items:center;justify-content:center;position:relative}
 .video-wrap video{height:88vh;width:auto;max-width:65vw;
   border:4px solid #1a1530;box-shadow:0 0 40px rgba(102,126,234,.3);background:#000}
 
+/* NPC name badge (RPG style, floating on video) */
+.npc-badge{position:absolute;top:6vh;left:50%;transform:translateX(-50%);
+  z-index:20;display:none;align-items:center;gap:.6rem;
+  background:rgba(10,8,20,.92);border:3px solid #ffd700;
+  padding:.5rem 1.2rem;box-shadow:0 0 20px rgba(255,215,0,.3);
+  font-family:'Press Start 2P',monospace;font-size:clamp(.7rem,1.2vw,.9rem);
+  color:#ffd700;letter-spacing:.12em;text-shadow:1px 1px 0 #000;
+  pointer-events:none;white-space:nowrap}
+.npc-badge.show{display:flex;animation:npcBadgeIn .4s cubic-bezier(.34,1.56,.64,1)}
+.npc-badge::before{content:"\25B6";font-size:.7rem;color:#4dd0c0}
+@keyframes npcBadgeIn{from{opacity:0;transform:translateX(-50%) translateY(-15px) scale(.7)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+
 /* ===== SAGE INTRO ===== */
 .sage-scene{background:radial-gradient(ellipse at center,#2a0a3a,#0a0515)}
 .sage-intro{text-align:center}
@@ -512,6 +524,7 @@ body{display:flex;align-items:center;justify-content:center;position:relative}
   <!-- 3: VIDEO -->
   <div class="scene video-scene" data-scene="3">
     <div class="video-wrap">
+      <div class="npc-badge" id="npcBadge"></div>
       <video id="videoPlayer" playsinline></video>
     </div>
   </div>
@@ -559,35 +572,35 @@ body{display:flex;align-items:center;justify-content:center;position:relative}
 var LEVELS = [
   { num:1, name:"Sunrise Glade",  subtitle:"Fellow Club Territory", desc:"A blessing from our friends at RISE TMC",
     video:"video/1.mp4", color:"#4dd0c0", color2:"#667eea", tip:"Listen carefully — every blessing counts!",
-    mapX:15, mapY:70 },
+    npc:"MISU", mapX:15, mapY:70 },
   { num:2, name:"Whisper Woods", subtitle:"Fellow Club Territory", desc:"A blessing from our friends at ETC",
     video:"video/2.mp4", color:"#667eea", color2:"#ba68c8", tip:"NPCs always have valuable items!",
-    mapX:30, mapY:50 },
+    npc:"RISE", mapX:30, mapY:50 },
   { num:3, name:"Crystal Cove", subtitle:"Fellow Club Territory", desc:"A blessing from our friends at MISU",
     video:"video/3.mp4", color:"#ba68c8", color2:"#ff5c8d", tip:"Collect all 7 shards to unlock the tower!",
-    mapX:45, mapY:65 },
+    npc:"C_Life self", mapX:45, mapY:65 },
   { num:4, name:"Ember Hills", subtitle:"Fellow Club Territory", desc:"A blessing from our friends at 5C+",
     video:"video/4.mp4", color:"#ff5c8d", color2:"#ffb627", tip:"Halfway there, keep going!",
-    mapX:55, mapY:40 },
+    npc:"Toastmasters Suzhou", mapX:55, mapY:40 },
   { num:5, name:"Aurora Peaks", subtitle:"Fellow Club Territory", desc:"A blessing from our friends at Elite",
     video:"video/5.mp4", color:"#ffb627", color2:"#ffd700", tip:"The tower is just ahead!",
-    mapX:65, mapY:55 },
+    npc:"Inception", mapX:65, mapY:55 },
   { num:6, name:"Thunder Shore", subtitle:"Fellow Club Territory", desc:"A blessing from our friends at TTT",
     video:"video/6.mp4", color:"#ffd700", color2:"#4dd0c0", tip:"Last shard before the tower!",
-    mapX:75, mapY:45 },
+    npc:"China Capital TMC", mapX:75, mapY:45 },
   { num:7, name:"Mystic Marsh", subtitle:"Fellow Club Territory", desc:"A blessing from our friends at Pioneer",
     video:"video/7.mp4", color:"#4dd0c0", color2:"#667eea", tip:"All shards collected! The tower awakens...",
-    mapX:85, mapY:60 },
+    npc:"AACTP", mapX:85, mapY:60 },
 ];
 
 var SAGES = [
-  { num:1, name:"SAGE ALPHA",   title:"Scholar of Stories",       video:"video/a.mp4", tip:"Wisdom comes in many forms." },
-  { num:2, name:"SAGE BETA",    title:"Master of Moments",        video:"video/b.mp4", tip:"Every sage has a unique gift." },
-  { num:3, name:"SAGE GAMMA",   title:"Keeper of Knowledge",     video:"video/c.mp4", tip:"Listen and learn, brave hero." },
-  { num:4, name:"SAGE DELTA",   title:"Warden of Words",         video:"video/d.mp4", tip:"Language unlocks new worlds." },
-  { num:5, name:"SAGE EPSILON", title:"Sage of Sharing",         video:"video/e.mp4", tip:"Halfway up the tower!" },
-  { num:6, name:"SAGE ZETA",    title:"Guardian of Growth",      video:"video/f.mp4", tip:"One more sage awaits!" },
-  { num:7, name:"SAGE ETA",     title:"Elder of Expression",     video:"video/g.mp4", tip:"All orbs collected! The final door opens..." },
+  { num:1, name:"SAGE ALPHA",   title:"Scholar of Stories",       video:"video/a.mp4", tip:"Wisdom comes in many forms.",   npc:"Athena JIANG" },
+  { num:2, name:"SAGE BETA",    title:"Master of Moments",        video:"video/b.mp4", tip:"Every sage has a unique gift.",  npc:"Alex JU" },
+  { num:3, name:"SAGE GAMMA",   title:"Keeper of Knowledge",     video:"video/c.mp4", tip:"Listen and learn, brave hero.", npc:"Cecilia" },
+  { num:4, name:"SAGE DELTA",   title:"Warden of Words",         video:"video/d.mp4", tip:"Language unlocks new worlds.",  npc:"Steve" },
+  { num:5, name:"SAGE EPSILON", title:"Sage of Sharing",         video:"video/e.mp4", tip:"Halfway up the tower!",          npc:"A-XIN" },
+  { num:6, name:"SAGE ZETA",    title:"Guardian of Growth",      video:"video/f.mp4", tip:"One more sage awaits!",          npc:"Leonard Pilz" },
+  { num:7, name:"SAGE ETA",     title:"Elder of Expression",     video:"video/g.mp4", tip:"All orbs collected! The final door opens...", npc:"Matt Kinsey" },
 ];
 
 var MEMBERS = [
@@ -621,9 +634,9 @@ var videoPlayer = $('videoPlayer');
 
 // ===== AUDIO =====
 var bgm = new Audio('audio/bgm_adventure.wav');
-bgm.loop = true; bgm.volume = 0.12;
+bgm.loop = true; bgm.volume = 0.10;
 var bgmBoss = new Audio('audio/bgm_boss.wav');
-bgmBoss.loop = true; bgmBoss.volume = 0.15;
+bgmBoss.loop = true; bgmBoss.volume = 0.12;
 var bgmVictory = new Audio('audio/bgm_emotional.wav');
 bgmVictory.loop = true; bgmVictory.volume = 0.15;
 
@@ -910,7 +923,15 @@ function showLevelCard(level, callback){
 
 // ===== VIDEO =====
 var videoFailTimer = null;
-function playVideo(src, callback){
+function playVideo(src, callback, npcName){
+  // Show NPC badge
+  var badge = $('npcBadge');
+  if(npcName){
+    badge.textContent = npcName;
+    badge.classList.add('show');
+  }else{
+    badge.classList.remove('show');
+  }
   if(state.videoEndHandler){
     videoPlayer.removeEventListener('ended', state.videoEndHandler);
   }
@@ -920,6 +941,7 @@ function playVideo(src, callback){
     if(done) return;
     done = true;
     if(videoFailTimer){ clearTimeout(videoFailTimer); videoFailTimer = null; }
+    badge.classList.remove('show');
     state.videoEndHandler = null;
     if(callback) callback();
   }
@@ -1099,7 +1121,7 @@ function nextLevel(){
           state.levelIdx++;
           setTimeout(nextLevel, 600);
         });
-      });
+      }, level.npc);
     });
   });
 }
@@ -1126,12 +1148,12 @@ function nextSage(){
   var sage = SAGES[state.sageIdx];
   showSageIntro(sage, function(){
     playVideo(sage.video, function(){
-      showPopup('orb', function(){
-        addOrb();
-        state.sageIdx++;
-        setTimeout(nextSage, 600);
-      });
-    });
+        showPopup('orb', function(){
+          addOrb();
+          state.sageIdx++;
+          setTimeout(nextSage, 600);
+        });
+      }, sage.npc);
   });
 }
 
